@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <div id="icon"></div>
     <meta charset="UTF-8">
-    <title>My Weather App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <div class="card">
-        <input type="text" id="cityInput" placeholder="Enter city name...">
-        <button id="searchBtn">Search</button>
+        <form id="weatherForm">
+            <input type="text" id="cityInput" placeholder="Enter city name..." autocomplete="off">
+            <button type="submit" id="searchBtn">Search</button>
+        </form>
+
         <div id="weatherResult">
-            <h2 id="cityName"></h2>
-            <p id="temp"></p>
-            <p id="desc"></p>
+            <div id="icon"></div>
+            <h2 id="cityName">Ready?</h2>
+            <p id="temp">--°C</p>
+            <p id="desc">Enter a city to see the weather</p>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

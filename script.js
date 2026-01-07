@@ -1,38 +1,36 @@
 const apiKey = 'e9bf7dfe314e226e5b1bdd101faf6160';
-const btn = document.getElementById('searchBtn');
+const weatherForm = document.getElementById('weatherForm');
+const cityInput = document.getElementById('cityInput');
 
-btn.addEventListener('click', () => {
-    const city = document.getElementById('cityInput').value;
-    fetchWeather(city);
-    const cityInput = document.getElementById('cityInput');
-
-    // This listens for the 'Enter' key press
-    cityInput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            const city = cityInput.value;
-            fetchWeather(city);
-        }
-    });
+weatherForm.addEventListener('submit', (event) => {
+    event.preventDefault(); // Prevents page reload
+    const city = cityInput.value.trim();
+    if (city) {
+        fetchWeather(city);
+    }
 });
 
 async function fetchWeather(city) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    
     try {
-        const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
-        );
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("City not found");
+        
         const data = await response.json();
-        
-        document.getElementById('cityName').innerText = data.name;
-        document.getElementById('temp').innerText = `${Math.round(data.main.temp)}°C`;
-        document.getElementById('desc').innerText = data.weather[0].description;
-        
-        // Icon Logic
-        const mainWeather = data.weather[0].main; // e.g., "Clouds", "Rain", "Clear"
-        updateIcon(mainWeather);
-
+        displayWeather(data);
     } catch (error) {
-        alert("City not found!");
+        alert(error.message);
     }
+}
+
+function displayWeather(data) {
+    document.getElementById('cityName').innerText = data.name;
+    document.getElementById('temp').innerText = `${Math.round(data.main.temp)}°C`;
+    document.getElementById('desc').innerText = data.weather[0].description;
+    
+    const mainWeather = data.weather[0].main;
+    updateIcon(mainWeather);
 }
 
 function updateIcon(weather) {
