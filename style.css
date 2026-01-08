@@ -72,6 +72,32 @@ button:hover {
     opacity: 0.9;
 }
 
+hr {
+    border: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 20px 0;
+}
+
+.forecast-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.forecast-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 10px 5px;
+    flex: 1;
+}
+
+.forecast-card p {
+    margin: 4px 0;
+    font-size: 0.8rem;
+}
+
 /* Animation for the icon */
 .fa-sun, .fa-cloud, .fa-snowflake, .fa-bolt, .fa-cloud-showers-heavy {
     animation: pulse 3s infinite ease-in-out;

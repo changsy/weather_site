@@ -12,51 +12,62 @@ weatherForm.addEventListener('submit', (event) => {
 
 async function fetchWeather(city) {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-    
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("City not found");
-        
-        const data = await response.json();
-        displayWeather(data);
+        const [currentRes, forecastRes] = await Promise.all([
+            fetch(currentUrl),
+            fetch(forecastUrl)
+        ]);
+
+        if (!currentRes.ok) throw new Error("City not found");
+
+        const currentData = await currentRes.json();
+        const forecastData = await forecastRes.json();
+
+        displayCurrentWeather(currentData);
+        displayForecast(forecastData);
     } catch (error) {
         alert(error.message);
     }
 }
 
-function displayWeather(data) {
+function displayCurrentWeather(data) {
     document.getElementById('cityName').innerText = data.name;
     document.getElementById('temp').innerText = `${Math.round(data.main.temp)}°C`;
     document.getElementById('desc').innerText = data.weather[0].description;
-    
-    const mainWeather = data.weather[0].main;
-    updateIcon(mainWeather);
+    document.getElementById('icon').innerHTML = getIcon(data.weather[0].main, "fa-5x");
 }
 
-function updateIcon(weather) {
-    const iconDiv = document.getElementById('icon');
-    let iconHTML = "";
+function displayForecast(data) {
+    const forecastDiv = document.getElementById('forecast');
+    forecastDiv.innerHTML = ""; 
 
-    switch (weather) {
-        case "Clear":
-            iconHTML = '<i class="fas fa-sun fa-5x"></i>';
-            break;
-        case "Clouds":
-            iconHTML = '<i class="fas fa-cloud fa-5x"></i>';
-            break;
-        case "Rain":
-        case "Drizzle":
-            iconHTML = '<i class="fas fa-cloud-showers-heavy fa-5x"></i>';
-            break;
-        case "Snow":
-            iconHTML = '<i class="fas fa-snowflake fa-5x"></i>';
-            break;
-        case "Thunderstorm":
-            iconHTML = '<i class="fas fa-bolt fa-5x"></i>';
-            break;
-        default:
-            iconHTML = '<i class="fas fa-cloud-sun fa-5x"></i>';
+    // Filter to get one forecast per day (checking for midday)
+    const dailyData = data.list.filter(item => item.dt_txt.includes("12:00:00"));
+
+    dailyData.forEach(day => {
+        const date = new Date(day.dt_txt);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        
+        const card = document.createElement('div');
+        card.className = 'forecast-card';
+        card.innerHTML = `
+            <p>${dayName}</p>
+            ${getIcon(day.weather[0].main, "fa-lg")}
+            <p><strong>${Math.round(day.main.temp)}°</strong></p>
+        `;
+        forecastDiv.appendChild(card);
+    });
+}
+
+function getIcon(condition, sizeClass) {
+    switch (condition) {
+        case "Clear": return `<i class="fas fa-sun ${sizeClass}"></i>`;
+        case "Clouds": return `<i class="fas fa-cloud ${sizeClass}"></i>`;
+        case "Rain": 
+        case "Drizzle": return `<i class="fas fa-cloud-showers-heavy ${sizeClass}"></i>`;
+        case "Snow": return `<i class="fas fa-snowflake ${sizeClass}"></i>`;
+        case "Thunderstorm": return `<i class="fas fa-bolt ${sizeClass}"></i>`;
+        default: return `<i class="fas fa-cloud-sun ${sizeClass}"></i>`;
     }
-    
-    iconDiv.innerHTML = iconHTML;
 }
